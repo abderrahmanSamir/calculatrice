@@ -43,6 +43,7 @@ function operation(number1, operateur, number2) {
 
   // Arrondir à 10 décimales pour éviter les erreurs de précision flottante
   if (typeof resultat === "number" && !Number.isInteger(resultat)) {
+    // Arrondir à 10 décimales
     resultat = Math.round(resultat * 10000000000) / 10000000000;
   }
 
