@@ -11,6 +11,9 @@ function multiplication(number1, number2) {
 }
 
 function division(number1, number2) {
+  if (number2 === 0) {
+    return "Erreur : Division par zéro";
+  }
   return number1 / number2;
 }
 
@@ -36,6 +39,11 @@ function operation(number1, operateur, number2) {
       break;
     default:
       break;
+  }
+
+  // Arrondir à 10 décimales pour éviter les erreurs de précision flottante
+  if (typeof resultat === "number" && !Number.isInteger(resultat)) {
+    resultat = Math.round(resultat * 10000000000) / 10000000000;
   }
 
   return resultat;
@@ -94,17 +102,16 @@ buttons.forEach((button) => {
           display.value = resultat;
           number1 = resultat;
           isResultDisplayed = true;
-          // Puis set l'opérateur (même ou différent)
+          // Stocker le nouvel opérateur sans l'afficher (le résultat reste visible)
           operateur = valeurBtn;
-          display.value = operateur;
         } else if (operateur === null) {
           // Premier opérateur après saisie de number1
           if (isResultDisplayed) {
             number1 = parseFloat(display.value);
             isResultDisplayed = false;
           } else {
-            number1 = parseFloat(display.value.slice(0));
-            if (number1 === "" || number1 === "null" || isNaN(number1)) {
+            number1 = parseFloat(display.value);
+            if (isNaN(number1)) {
               number1 = 0;
             }
           }
@@ -120,8 +127,8 @@ buttons.forEach((button) => {
         if (operateur === null) {
           // Rien ne se passe si pas d'opérateur
         } else {
-          number2 = parseFloat(display.value.slice(0));
-          if (number2 === "" || number2 === "null" || isNaN(number2)) {
+          number2 = parseFloat(display.value);
+          if (isNaN(number2)) {
             number2 = 0;
           }
           let resultat = operation(number1, operateur, number2);
@@ -174,7 +181,26 @@ clearBtn.addEventListener("click", function () {
 });
 
 deleteBtn.addEventListener("click", function () {
-  if (display.value.length > 1) {
+  // Si c'est un message d'erreur, réinitialiser complètement
+  if (display.value.includes("Erreur")) {
+    display.value = "0";
+    number1 = null;
+    number2 = null;
+    operateur = null;
+    isResultDisplayed = false;
+  }
+  // Si c'est un opérateur, revenir au nombre précédent
+  else if (
+    display.value === "+" ||
+    display.value === "-" ||
+    display.value === "*" ||
+    display.value === "/"
+  ) {
+    operateur = null;
+    display.value = number1 !== null ? number1 : "0";
+  }
+  // Sinon, supprimer un caractère
+  else if (display.value.length > 1) {
     display.value = display.value.slice(0, -1);
   } else if (display.value !== "0") {
     display.value = "0";
